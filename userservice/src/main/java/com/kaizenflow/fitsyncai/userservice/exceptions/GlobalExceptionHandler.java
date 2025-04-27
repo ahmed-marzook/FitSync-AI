@@ -28,11 +28,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
 
         @ExceptionHandler(ResourceAlreadyExistsException.class)
-        public ResponseEntity<ErrorDetails> handleUserAlreadyExistsException(
+        public ResponseEntity<ErrorDetails> ResourceAlreadyExistsException(
                         ResourceAlreadyExistsException exception, WebRequest request) {
 
                 ErrorDetails errorDetails = new ErrorDetails(
-                                LocalDateTime.now(), exception.getMessage(), request.getDescription(false), "USER_ALREADY_EXISTS");
+                                LocalDateTime.now(), exception.getMessage(), request.getDescription(false), "RESOURCE_ALREADY_EXISTS");
 
                 return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
         }
