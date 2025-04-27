@@ -45,6 +45,7 @@ public class Users {
         private String lastName;
 
         @Enumerated(EnumType.STRING)
+        @Builder.Default
         private UserRole role = UserRole.USER;
 
         @CreationTimestamp
