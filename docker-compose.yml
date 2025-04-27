@@ -14,7 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       # Initialize database with separate schemas for different services
-      - ./postgres-init:/docker-entrypoint-initdb.d
+      - ./init-scripts/database/postgres-init:/docker-entrypoint-initdb.d
     networks:
       - fitsync-network
     healthcheck:
@@ -35,7 +35,7 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d
+      - ./init-scripts/database/mongo-init:/docker-entrypoint-initdb.d
     networks:
       - fitsync-network
     command: mongod --auth
