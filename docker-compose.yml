@@ -1,0 +1,125 @@
+services:
+  # MySQL databases for each service
+  # PostgreSQL Database - For User data, Authentication, and structured data
+  postgres:
+    image: postgres:15-alpine
+    container_name: fitsyncai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fitsyncai
+      POSTGRES_PASSWORD: fitsyncaipassword
+      POSTGRES_DB: fitsyncai_user
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with separate schemas for different services
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    networks:
+      - fitsync-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U fitsync -d fitsync_main" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB - For activity tracking, workouts, and analytics data
+  mongodb:
+    image: mongo:6-jammy
+    container_name: fitsync-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: fitsync
+      MONGO_INITDB_ROOT_PASSWORD: fitsyncpassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - fitsync-network
+    command: mongod --auth
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ - Message broker for communication between services
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: fitsync-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: fitsync
+      RABBITMQ_DEFAULT_PASS: fitsyncpassword
+    ports:
+      - "5672:5672" # AMQP protocol
+      - "15672:15672" # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - fitsync-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Keycloak for authentication and authorization
+  keycloak-postgres:
+    image: postgres:15
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_password
+    volumes:
+      - keycloak-postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U keycloak" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Optional: Uncomment to set the hostname for production
+      # KC_HOSTNAME: keycloak.example.com
+    ports:
+      - "8080:8080"
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+    networks:
+      - keycloak-network
+      - fitsync-network
+    # Uncomment for production setup
+    # volumes:
+    #   - keycloak_data:/opt/keycloak/data
+
+networks:
+  fitsync-network:
+    driver: bridge
+  keycloak-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  keycloak-postgres_data:
+  postgres_data:
+  mongodb_data:
+  rabbitmq_data:
+    # Uncomment for production setup
+    # keycloak_data:
