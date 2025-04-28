@@ -60,9 +60,9 @@ rabbitmq:
 
 
   #Spring Cloud Eureka Client Configuration
-  eureka:
-    client:
-      serviceUrl:
-        defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-    instance:
-      preferIpAddress: true
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true

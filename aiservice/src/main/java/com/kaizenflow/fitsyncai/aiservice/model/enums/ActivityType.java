@@ -1,4 +1,4 @@
-package com.kaizenflow.fitsyncai.activityservice.model.enums;
+package com.kaizenflow.fitsyncai.aiservice.model.enums;
 
 public enum ActivityType {
         RUNNING,
