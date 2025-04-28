@@ -1,14 +1,14 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
-    name: activity-service
+    name: ai-service
   data:
     mongodb:
       host: localhost
       port: 27017
-      database: fitnessActivity
+      database: fitnessRecommendations
       username: fitsync
       password: fitsyncpassword
       authentication-database: admin
