@@ -3,12 +3,10 @@ package com.kaizenflow.fitsyncai.aiservice.model.dto;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import com.kaizenflow.fitsyncai.aiservice.model.enums.ActivityType;
-
-public record ActivityDTO(
+public record Activity(
                 String id,
                 String userId,
-                ActivityType type,
+                String type,
                 Integer duration,
                 Integer caloriesBurned,
                 LocalDateTime startTime,

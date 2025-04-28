@@ -62,7 +62,13 @@ rabbitmq:
     max-concurrency: 10
     prefetch: 250
 
-  #Spring Cloud Eureka Client Configuration
+# Google Gemini Configuration
+gemini:
+  api:
+    url: https://generativelanguage.googleapis.com
+    key: ${GEMINI_API_KEY}
+
+#Spring Cloud Eureka Client Configuration
 eureka:
   client:
     serviceUrl:
