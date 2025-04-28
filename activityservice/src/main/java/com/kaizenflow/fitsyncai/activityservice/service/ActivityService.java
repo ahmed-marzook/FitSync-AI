@@ -1,5 +1,8 @@
 package com.kaizenflow.fitsyncai.activityservice.service;
 
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,15 +30,47 @@ public class ActivityService {
         private final ActivityMapper activityMapper;
         private final UserClientService userClientService;
 
+        @Value("${rabbitmq.exchange.name:default.exchange}")
+        private String exchangeName;
+
+        @Value("${rabbitmq.routing.key:default.routing.key}")
+        private String routingKey;
+
+        private final RabbitTemplate rabbitTemplate;
+
         public Mono<ActivityDTO> createActivity(ActivityCreateDTO activityCreateDTO) {
                 log.info("Creating new activity for user: {}", activityCreateDTO.userId());
                 return userClientService
                                 .validateUser(activityCreateDTO.userId())
-                                .publishOn(Schedulers.boundedElastic())
-                                .map(response -> {
-                                        Activity activity = activityMapper.toEntity(activityCreateDTO);
-                                        Activity savedActivity = activityRepository.save(activity);
-                                        return activityMapper.toDto(savedActivity);
+                                .flatMap(response -> {
+                                        // Wrap both blocking operations (DB save and RabbitMQ publish) in a single Mono.fromCallable
+                                        // to execute them on a bounded elastic scheduler
+                                        return Mono.fromCallable(() -> {
+                                                                // Convert DTO to entity
+                                                                Activity activity = activityMapper.toEntity(activityCreateDTO);
+
+                                                                // Save activity to database (blocking call)
+                                                                Activity savedActivity = activityRepository.save(activity);
+
+                                                                // Convert to DTO
+                                                                ActivityDTO activityDTO = activityMapper.toDto(savedActivity);
+
+                                                                // Publish to RabbitMQ (also potentially blocking)
+                                                                try {
+                                                                        rabbitTemplate.convertAndSend(exchangeName, routingKey, activityDTO);
+                                                                        log.info("Activity published to RabbitMQ: {}", activityDTO);
+                                                                } catch (AmqpException e) {
+                                                                        log.error("Failed to publish activity to RabbitMQ: {}", e.getMessage(), e);
+                                                                        // Consider implementing a retry mechanism or failed messages table
+                                                                }
+
+                                                                return activityDTO;
+                                                        })
+                                                        .subscribeOn(Schedulers.boundedElastic());
+                                })
+                                .onErrorResume(e -> {
+                                        log.error("Error creating activity: {}", e.getMessage(), e);
+                                        return Mono.error(e);
                                 });
         }
 

@@ -12,6 +12,11 @@ spring:
       username: fitsync
       password: fitsyncpassword
       authentication-database: admin
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: fitsync
+    password: fitsyncpassword
 
 # Actuator Endpoints Configuration
 management:
@@ -43,6 +48,16 @@ springdoc:
   show-actuator: true
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+
+#RabbitMQ Configuration
+rabbitmq:
+  exchange:
+    name: fitness.exchange
+  queue:
+    name: activity.queue
+  routing:
+    key: activity.tracking
+
 
   #Spring Cloud Eureka Client Configuration
   eureka:
