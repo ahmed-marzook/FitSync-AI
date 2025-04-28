@@ -15,6 +15,8 @@ import com.kaizenflow.fitsyncai.activityservice.repository.ActivityRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @Slf4j
@@ -23,12 +25,18 @@ public class ActivityService {
 
         private final ActivityRepository activityRepository;
         private final ActivityMapper activityMapper;
+        private final UserClientService userClientService;
 
-        public ActivityDTO createActivity(ActivityCreateDTO activityCreateDTO) {
+        public Mono<ActivityDTO> createActivity(ActivityCreateDTO activityCreateDTO) {
                 log.info("Creating new activity for user: {}", activityCreateDTO.userId());
-                Activity activity = activityMapper.toEntity(activityCreateDTO);
-                Activity savedActivity = activityRepository.save(activity);
-                return activityMapper.toDto(savedActivity);
+                return userClientService
+                                .validateUser(activityCreateDTO.userId())
+                                .publishOn(Schedulers.boundedElastic())
+                                .map(response -> {
+                                        Activity activity = activityMapper.toEntity(activityCreateDTO);
+                                        Activity savedActivity = activityRepository.save(activity);
+                                        return activityMapper.toDto(savedActivity);
+                                });
         }
 
         public ActivityDTO getActivityById(String id) {

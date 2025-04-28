@@ -24,6 +24,7 @@ import com.kaizenflow.fitsyncai.activityservice.service.ActivityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1/activities")
@@ -34,10 +35,8 @@ public class ActivityController {
         private final ActivityService activityService;
 
         @PostMapping
-        public ResponseEntity<ActivityDTO> createActivity(@Valid @RequestBody ActivityCreateDTO activityCreateDTO) {
-                log.info("REST request to create a new activity");
-                ActivityDTO result = activityService.createActivity(activityCreateDTO);
-                return new ResponseEntity<>(result, HttpStatus.CREATED);
+        public Mono<ResponseEntity<ActivityDTO>> createActivity(@Valid @RequestBody ActivityCreateDTO dto) {
+                return activityService.createActivity(dto).map(result -> new ResponseEntity<>(result, HttpStatus.CREATED));
         }
 
         @GetMapping("/{id}")
