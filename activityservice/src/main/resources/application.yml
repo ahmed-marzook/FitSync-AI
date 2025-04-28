@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: activityservice
+    name: activity-service
   data:
     mongodb:
       host: localhost
@@ -43,3 +43,11 @@ springdoc:
   show-actuator: true
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+
+  #Spring Cloud Eureka Client Configuration
+  eureka:
+    client:
+      serviceUrl:
+        defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    instance:
+      preferIpAddress: true

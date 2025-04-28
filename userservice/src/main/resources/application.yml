@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: userservice
+    name: user-service
   datasource:
     url: jdbc:postgresql://localhost:5432/fitsyncai_user
     username: fitsyncai
@@ -59,3 +59,11 @@ springdoc:
   show-actuator: true
   default-produces-media-type: application/json
   default-consumes-media-type: application/json
+
+#Spring Cloud Eureka Client Configuration
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true
