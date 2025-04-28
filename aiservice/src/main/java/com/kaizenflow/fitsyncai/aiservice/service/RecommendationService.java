@@ -1,0 +1,108 @@
+package com.kaizenflow.fitsyncai.aiservice.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.kaizenflow.fitsyncai.aiservice.exception.ResourceNotFoundException;
+import com.kaizenflow.fitsyncai.aiservice.mapper.RecommendationMapper;
+import com.kaizenflow.fitsyncai.aiservice.model.document.Recommendation;
+import com.kaizenflow.fitsyncai.aiservice.model.dto.request.CreateRecommendationRequest;
+import com.kaizenflow.fitsyncai.aiservice.model.dto.request.UpdateRecommendationRequest;
+import com.kaizenflow.fitsyncai.aiservice.model.dto.response.RecommendationResponse;
+import com.kaizenflow.fitsyncai.aiservice.repository.RecommendationRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class RecommendationService {
+
+        private final RecommendationRepository recommendationRepository;
+        private final RecommendationMapper recommendationMapper;
+
+        /**
+         * Create a new recommendation
+         */
+        public RecommendationResponse createRecommendation(CreateRecommendationRequest request) {
+                Recommendation recommendation = recommendationMapper.toDocument(request);
+                // Save to repository
+                Recommendation savedRecommendation = recommendationRepository.save(recommendation);
+                // Convert to response using MapStruct
+                return recommendationMapper.toResponse(savedRecommendation);
+        }
+
+        /**
+         * Get recommendation by ID
+         */
+        public RecommendationResponse getRecommendationById(String id) {
+                Recommendation recommendation = findRecommendationById(id);
+                return recommendationMapper.toResponse(recommendation);
+        }
+
+        /**
+         * Get all recommendations for a specific user
+         */
+        public List<RecommendationResponse> getRecommendationsByUserId(String userId) {
+                List<Recommendation> recommendations = recommendationRepository.findByUserId(userId);
+                return recommendations.stream().map(recommendationMapper::toResponse).collect(Collectors.toList());
+        }
+
+        /**
+         * Get all recommendations for a specific activity
+         */
+        public List<RecommendationResponse> getRecommendationsByActivityId(String activityId) {
+                List<Recommendation> recommendations = recommendationRepository.findByActivityId(activityId);
+                return recommendations.stream().map(recommendationMapper::toResponse).collect(Collectors.toList());
+        }
+
+        /**
+         * Get all recommendations for a specific user and activity type
+         */
+        public List<RecommendationResponse> getRecommendationsByUserIdAndActivityType(String userId, String activityType) {
+                List<Recommendation> recommendations =
+                                recommendationRepository.findByUserIdAndActivityType(userId, activityType);
+                return recommendations.stream().map(recommendationMapper::toResponse).collect(Collectors.toList());
+        }
+
+        /**
+         * Get recommendation for a specific user and activity
+         */
+        public RecommendationResponse getRecommendationByUserIdAndActivityId(String userId, String activityId) {
+                Recommendation recommendation = recommendationRepository
+                                .findByUserIdAndActivityId(userId, activityId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Recommendation not found for userId: " + userId + " and activityId: " + activityId));
+                return recommendationMapper.toResponse(recommendation);
+        }
+
+        /**
+         * Update an existing recommendation
+         */
+        public RecommendationResponse updateRecommendation(String id, UpdateRecommendationRequest request) {
+                Recommendation recommendation = findRecommendationById(id);
+                recommendationMapper.updateDocument(recommendation, request);
+                Recommendation updatedRecommendation = recommendationRepository.save(recommendation);
+                return recommendationMapper.toResponse(updatedRecommendation);
+        }
+
+        /**
+         * Delete recommendation by ID
+         */
+        public void deleteRecommendation(String id) {
+                if (!recommendationRepository.existsById(id)) {
+                        throw new ResourceNotFoundException("Recommendation not found with id: " + id);
+                }
+                recommendationRepository.deleteById(id);
+        }
+
+        /**
+         * Helper method to find recommendation by ID
+         */
+        private Recommendation findRecommendationById(String id) {
+                return recommendationRepository
+                                .findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Recommendation not found with id: " + id));
+        }
+}
