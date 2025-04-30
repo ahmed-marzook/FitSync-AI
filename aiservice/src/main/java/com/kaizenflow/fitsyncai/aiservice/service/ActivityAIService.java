@@ -1,9 +1,18 @@
 package com.kaizenflow.fitsyncai.aiservice.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaizenflow.fitsyncai.aiservice.model.dto.Activity;
+import com.kaizenflow.fitsyncai.aiservice.model.dto.RunningAnalysis;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -12,11 +21,32 @@ public class ActivityAIService {
 
     private final GeminiAIService geminiAIService;
 
-    public String generateRecommendation(Activity activity) {
+    public RunningAnalysis generateRecommendation(Activity activity) throws IOException {
         String prompt = createPromptForActivity(activity);
         String aiResponse = geminiAIService.generateRecommendation(prompt);
-        log.info("AI response: {}", aiResponse);
-        return aiResponse;
+        RunningAnalysis geminiResponse = processGeminiResponseWithEmbeddedJson(aiResponse);
+        log.info("AI response: {}", geminiResponse);
+        return geminiResponse;
+    }
+
+    private String extractTextFromGeminiResponse(String responseJson) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(responseJson);
+
+        return rootNode
+                .path("candidates")
+                .path(0)
+                .path("content")
+                .path("parts")
+                .path(0)
+                .path("text")
+                .asText("").replaceAll("```json\\n", "").replaceAll("\\n```", "");
+    }
+
+    private RunningAnalysis processGeminiResponseWithEmbeddedJson(String responseJson) throws IOException {
+        String text = extractTextFromGeminiResponse(responseJson);
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(text, RunningAnalysis.class);
     }
 
     private String createPromptForActivity(Activity activity) {

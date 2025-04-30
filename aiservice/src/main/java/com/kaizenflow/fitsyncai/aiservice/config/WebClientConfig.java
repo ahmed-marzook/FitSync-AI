@@ -31,13 +31,13 @@ public class WebClientConfig {
         @Value("${gemini.api.url}")
         private String geminiApiUrl;
 
-        @Value("${gemini.api.connect-timeout:5000}")
+        @Value("${gemini.api.connect-timeout:10000}")
         private int connectTimeout;
 
-        @Value("${gemini.api.read-timeout:10000}")
+        @Value("${gemini.api.read-timeout:30000}")
         private int readTimeout;
 
-        @Value("${gemini.api.write-timeout:5000}")
+        @Value("${gemini.api.write-timeout:10000}")
         private int writeTimeout;
 
         @Value("${gemini.api.response-timeout:30000}")
@@ -46,7 +46,7 @@ public class WebClientConfig {
         @Value("${gemini.api.retry-attempts:3}")
         private int retryAttempts;
 
-        @Value("${gemini.api.retry-initial-backoff:1000}")
+        @Value("${gemini.api.retry-initial-backoff:8000}")
         private long retryInitialBackoff;
 
         @Bean
