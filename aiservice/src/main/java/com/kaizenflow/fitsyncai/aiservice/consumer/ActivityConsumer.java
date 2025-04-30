@@ -17,7 +17,7 @@ public class ActivityConsumer {
 
         private final ActivityProcessingService activityProcessingService;
 
-        @RabbitListener(queues = "${rabbitmq.queue.name:default.queue}")
+        @RabbitListener(queues = "${rabbitmq.queue.name:activity.queue}")
         public void processActivity(Activity activity) {
                 try {
                         log.info("Received activity from queue: {}", activity);
