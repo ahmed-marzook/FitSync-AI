@@ -13,7 +13,7 @@ import com.kaizenflow.fitsyncai.userservice.mapper.UserMapper;
 import com.kaizenflow.fitsyncai.userservice.model.dto.UserDTO;
 import com.kaizenflow.fitsyncai.userservice.model.dto.request.UserCreateDTO;
 import com.kaizenflow.fitsyncai.userservice.model.dto.request.UserUpdateDTO;
-import com.kaizenflow.fitsyncai.userservice.model.entity.Users;
+import com.kaizenflow.fitsyncai.userservice.model.entity.User;
 import com.kaizenflow.fitsyncai.userservice.repository.UserRepository;
 
 @Service
@@ -34,15 +34,15 @@ public class UserService {
                         throw new ResourceAlreadyExistsException("User with email " + userCreateDTO.email() + " already exists");
                 }
 
-                Users user = userMapper.toEntity(userCreateDTO);
+                User user = userMapper.toEntity(userCreateDTO);
 
-                Users savedUser = userRepository.save(user);
+                User savedUser = userRepository.save(user);
                 return userMapper.toDto(savedUser);
         }
 
         public UserDTO getUserById(UUID id) {
-                Users user = userRepository
-                                .findById(id)
+                User user = userRepository
+                                .findByUserGuid(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
                 return userMapper.toDto(user);
         }
@@ -58,8 +58,8 @@ public class UserService {
         }
 
         public UserDTO updateUser(UUID id, UserUpdateDTO userUpdateDTO) {
-                Users user = userRepository
-                                .findById(id)
+                User user = userRepository
+                                .findByUserGuid(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
                 userMapper.updateEntityFromDto(userUpdateDTO, user);
@@ -68,7 +68,7 @@ public class UserService {
                 //                        user.setPassword(passwordEncoder.encode(userUpdateDTO.password()));
                 //                }
 
-                Users updatedUser = userRepository.save(user);
+                User updatedUser = userRepository.save(user);
                 return userMapper.toDto(updatedUser);
         }
 

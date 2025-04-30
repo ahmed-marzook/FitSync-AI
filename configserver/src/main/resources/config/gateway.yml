@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/fitsyncai-oauth2/protocol/openid-connect/certs
   config:
     import: common.yml
   cloud:

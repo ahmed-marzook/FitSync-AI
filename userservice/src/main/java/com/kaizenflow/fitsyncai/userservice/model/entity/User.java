@@ -28,11 +28,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users {
+public class User {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.UUID)
-        private UUID id;
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @Column(nullable = false)
+        private UUID userGuid;
 
         @Email
         @Column(unique = true, nullable = false)
@@ -41,12 +44,17 @@ public class Users {
         @Column(nullable = false)
         private String password;
 
+        @Column(length = 50)
         private String firstName;
+
+        @Column(length = 50)
         private String lastName;
 
         @Enumerated(EnumType.STRING)
         @Builder.Default
         private UserRole role = UserRole.USER;
+
+        private LocalDateTime lastLoginAt;
 
         @CreationTimestamp
         private LocalDateTime createdAt;

@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.kaizenflow.fitsyncai.userservice.model.enums.UserRole;
 
 public record UserDTO(
-                UUID id,
+                UUID userGuid,
                 String email,
                 String firstName,
                 String lastName,
