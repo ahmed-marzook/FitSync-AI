@@ -4,6 +4,10 @@
 
 Welcome to the comprehensive microservices-based fitness application project! This repository contains a complete, production-ready fitness platform built on a modern microservices architecture using Spring Boot and React.
 
+Project inspired By:
+[EmbarkXOfficial YouTube Video](https://www.youtube.com/watch?v=_FdKTSFnWeg&list=LL)
+[EmbarkXOfficial Fitness App Microservices](https://github.com/EmbarkXOfficial/fitness-app-microservices)
+
 ![FitSync AI Banner](./fitsync-ai-diagram.png)
 
 ## 🚀 Highlights
