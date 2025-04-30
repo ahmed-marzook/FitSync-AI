@@ -1,13 +1,13 @@
 package com.kaizenflow.fitsyncai.userservice.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kaizenflow.fitsyncai.userservice.exceptions.ResourceAlreadyExistsException;
 import com.kaizenflow.fitsyncai.userservice.exceptions.ResourceNotFoundException;
 import com.kaizenflow.fitsyncai.userservice.mapper.UserMapper;
 import com.kaizenflow.fitsyncai.userservice.model.dto.UserDTO;
@@ -30,8 +30,9 @@ public class UserService {
         }
 
         public UserDTO createUser(UserCreateDTO userCreateDTO) {
-                if (userRepository.findByEmail(userCreateDTO.email()).isPresent()) {
-                        throw new ResourceAlreadyExistsException("User with email " + userCreateDTO.email() + " already exists");
+                Optional<UserDTO> existingUser = userRepository.findByEmail(userCreateDTO.email());
+                if (existingUser.isPresent()) {
+                        return existingUser.get();
                 }
 
                 User user = userMapper.toEntity(userCreateDTO);
@@ -45,12 +46,6 @@ public class UserService {
                                 .findByUserGuid(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
                 return userMapper.toDto(user);
-        }
-
-        public UserDTO getUserByEmail(String email) {
-                return userRepository
-                                .findByEmail(email)
-                                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         }
 
         public List<UserDTO> getAllUsers() {
