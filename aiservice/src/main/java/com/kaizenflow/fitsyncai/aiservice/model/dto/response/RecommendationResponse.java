@@ -1,7 +1,8 @@
 package com.kaizenflow.fitsyncai.aiservice.model.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+import com.kaizenflow.fitsyncai.aiservice.model.dto.RunningAnalysis;
 
 /**
  * Response DTO for recommendation data
@@ -11,9 +12,6 @@ public record RecommendationResponse(
                 String activityId,
                 String userId,
                 String activityType,
-                String recommendation,
-                List<String> improvements,
-                List<String> suggestions,
-                List<String> safety,
+                RunningAnalysis recommendation,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt) {}

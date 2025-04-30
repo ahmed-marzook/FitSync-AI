@@ -2,24 +2,17 @@ package com.kaizenflow.fitsyncai.aiservice.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kaizenflow.fitsyncai.aiservice.model.dto.request.CreateRecommendationRequest;
-import com.kaizenflow.fitsyncai.aiservice.model.dto.request.UpdateRecommendationRequest;
 import com.kaizenflow.fitsyncai.aiservice.model.dto.response.RecommendationResponse;
 import com.kaizenflow.fitsyncai.aiservice.service.RecommendationService;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
@@ -30,16 +23,6 @@ import lombok.RequiredArgsConstructor;
 public class RecommendationController {
 
         private final RecommendationService recommendationService;
-
-        /**
-         * Create a new recommendation
-         */
-        @PostMapping
-        public ResponseEntity<RecommendationResponse> createRecommendation(
-                        @Valid @RequestBody CreateRecommendationRequest request) {
-                RecommendationResponse response = recommendationService.createRecommendation(request);
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-        }
 
         /**
          * Get recommendation by ID
@@ -92,17 +75,6 @@ public class RecommendationController {
                         @PathVariable @NotBlank(message = "Activity ID cannot be blank") String activityId) {
                 RecommendationResponse response =
                                 recommendationService.getRecommendationByUserIdAndActivityId(userId, activityId);
-                return ResponseEntity.ok(response);
-        }
-
-        /**
-         * Update an existing recommendation
-         */
-        @PutMapping("/{id}")
-        public ResponseEntity<RecommendationResponse> updateRecommendation(
-                        @PathVariable @NotBlank(message = "ID cannot be blank") String id,
-                        @Valid @RequestBody UpdateRecommendationRequest request) {
-                RecommendationResponse response = recommendationService.updateRecommendation(id, request);
                 return ResponseEntity.ok(response);
         }
 

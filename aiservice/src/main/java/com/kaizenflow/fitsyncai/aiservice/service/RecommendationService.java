@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import com.kaizenflow.fitsyncai.aiservice.exception.ResourceNotFoundException;
 import com.kaizenflow.fitsyncai.aiservice.mapper.RecommendationMapper;
 import com.kaizenflow.fitsyncai.aiservice.model.document.Recommendation;
-import com.kaizenflow.fitsyncai.aiservice.model.dto.request.CreateRecommendationRequest;
-import com.kaizenflow.fitsyncai.aiservice.model.dto.request.UpdateRecommendationRequest;
 import com.kaizenflow.fitsyncai.aiservice.model.dto.response.RecommendationResponse;
 import com.kaizenflow.fitsyncai.aiservice.repository.RecommendationRepository;
 
@@ -21,17 +19,6 @@ public class RecommendationService {
 
         private final RecommendationRepository recommendationRepository;
         private final RecommendationMapper recommendationMapper;
-
-        /**
-         * Create a new recommendation
-         */
-        public RecommendationResponse createRecommendation(CreateRecommendationRequest request) {
-                Recommendation recommendation = recommendationMapper.toDocument(request);
-                // Save to repository
-                Recommendation savedRecommendation = recommendationRepository.save(recommendation);
-                // Convert to response using MapStruct
-                return recommendationMapper.toResponse(savedRecommendation);
-        }
 
         /**
          * Get recommendation by ID
@@ -75,16 +62,6 @@ public class RecommendationService {
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "Recommendation not found for userId: " + userId + " and activityId: " + activityId));
                 return recommendationMapper.toResponse(recommendation);
-        }
-
-        /**
-         * Update an existing recommendation
-         */
-        public RecommendationResponse updateRecommendation(String id, UpdateRecommendationRequest request) {
-                Recommendation recommendation = findRecommendationById(id);
-                recommendationMapper.updateDocument(recommendation, request);
-                Recommendation updatedRecommendation = recommendationRepository.save(recommendation);
-                return recommendationMapper.toResponse(updatedRecommendation);
         }
 
         /**
