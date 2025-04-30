@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: config-server
+  config:
+    import: ./config/common.yml
   profiles:
     active: native
   cloud:
