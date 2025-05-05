@@ -1,4 +1,4 @@
-package com.kaizenflow.fitsyncai.userservice.model.dto.request;
+package com.kaizenflow.fitsyncai.gateway.model.request;
 
 import java.util.UUID;
 
