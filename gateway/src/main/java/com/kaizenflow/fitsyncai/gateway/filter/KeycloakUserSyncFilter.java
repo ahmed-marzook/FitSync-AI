@@ -3,6 +3,7 @@ package com.kaizenflow.fitsyncai.gateway.filter;
 import java.text.ParseException;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -25,21 +26,19 @@ public class KeycloakUserSyncFilter implements WebFilter {
         private final UserClientService userClientService;
 
         public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-                String userGuid = exchange.getRequest().getHeaders().getFirst("X-User_guid");
                 String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-
-                if (userGuid == null || token == null || userGuid.isBlank() || token.isBlank()) {
+                UserCreateDTO request = extractUserFromToken(token);
+                if (StringUtils.isBlank(request.userGuid().toString()) || token.isBlank()) {
                         // If headers are missing or blank, return unauthorized
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                         return exchange.getResponse().setComplete();
                 }
 
                 return userClientService
-                                .validateUser(userGuid)
+                                .validateUser(request.userGuid().toString())
                                 .flatMap(userDTO -> {
                                         // User exists, continue with the filter chain
                                         if (userDTO.email() == null) {
-                                                UserCreateDTO request = extractUserFromToken(token);
                                                 return userClientService.registerUser(request).then(chain.filter(exchange));
                                         }
                                         return chain.filter(exchange);
