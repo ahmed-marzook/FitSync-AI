@@ -5,6 +5,7 @@ import { AuthContext } from "react-oauth2-code-pkce";
 import { useDispatch } from "react-redux";
 import { setCredentials, logout } from "./store/authSlice";
 import Activities from "./pages/Activities/Activities";
+import ActivityDetail from "./components/ActivityDetail";
 
 const router = createBrowserRouter([
   {
@@ -15,12 +16,16 @@ const router = createBrowserRouter([
         path: "/activities",
         element: <Activities />,
       },
+      {
+        path: "/activities/:id",
+        element: <ActivityDetail />,
+      },
     ],
   },
 ]);
 
 function App() {
-  const { token, tokenData, isAuthenticated } = useContext(AuthContext);
+  const { token, tokenData } = useContext(AuthContext);
   const dispatch = useDispatch();
   const [authReady, setAuthReady] = useState(false);
 

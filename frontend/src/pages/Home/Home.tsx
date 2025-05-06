@@ -1,10 +1,12 @@
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useContext } from "react";
 import { Outlet } from "react-router";
+import { useNavigate } from "react-router";
 
 function Home() {
-  const { logIn, logOut, token, tokenData } = useContext(AuthContext);
+  const { logIn, logOut, tokenData } = useContext(AuthContext);
+  const navigate = useNavigate();
   return (
     <div>
       {tokenData ? (
@@ -14,6 +16,7 @@ function Home() {
             sx={{ backgroundColor: "red", color: ":fff" }}
             onClick={() => {
               logOut();
+              navigate("/");
             }}
           >
             LOGOUT
