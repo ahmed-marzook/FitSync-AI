@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#f5f5f5" />
+  
+  <!-- Brain Pattern (AI Component) -->
+  <path d="M260 140 C300 140, 340 160, 360 200 C380 240, 380 280, 360 320 C340 360, 300 380, 260 380" 
+        fill="none" stroke="#6366F1" stroke-width="10" stroke-linecap="round" />
+  <path d="M260 180 C290 180, 320 195, 335 225 C350 255, 350 285, 335 315 C320 345, 290 360, 260 360" 
+        fill="none" stroke="#6366F1" stroke-width="10" stroke-linecap="round" />
+  
+  <!-- Heartbeat Line (Fitness Component) -->
+  <path d="M120 256 L160 256 L180 216 L220 296 L240 256 L260 256" 
+        fill="none" stroke="#EF4444" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Connecting Dots -->
+  <circle cx="260" cy="256" r="8" fill="#6366F1" />
+  <circle cx="335" cy="225" r="6" fill="#6366F1" />
+  <circle cx="335" cy="315" r="6" fill="#6366F1" />
+  <circle cx="240" cy="256" r="6" fill="#EF4444" />
+  <circle cx="220" cy="296" r="6" fill="#EF4444" />
+  
+  <!-- Text (hidden in favicon, visible in logo) -->
+  <g id="logo-text">
+    <text x="256" y="420" font-family="Arial, sans-serif" font-weight="bold" font-size="40" text-anchor="middle" fill="#1F2937">Fit Sync AI</text>
+  </g>
+</svg>

@@ -4,11 +4,18 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
 import { useDispatch } from "react-redux";
 import { setCredentials, logout } from "./store/authSlice";
+import Activities from "./pages/Activities/Activities";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+    children: [
+      {
+        path: "/activities",
+        element: <Activities />,
+      },
+    ],
   },
 ]);
 
@@ -27,11 +34,7 @@ function App() {
       dispatch(logout());
     }
   }, [token, tokenData, dispatch]);
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
