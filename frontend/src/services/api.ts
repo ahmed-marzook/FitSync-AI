@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import type { CreateActivityRequest } from "../types/CreateActivityRequest ";
+
 const API_URL = "http://localhost:8084/api/v1/";
 
 const apiClient = axios.create({
@@ -34,7 +36,7 @@ export const getActivities = async () => {
   }
 };
 
-export const addActivity = async (activity) => {
+export const addActivity = async (activity: CreateActivityRequest) => {
   try {
     const response = await apiClient.post("/activities", activity);
     return response.data;

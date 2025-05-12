@@ -7,22 +7,29 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import type { CreateActivityRequest } from "../types/CreateActivityRequest ";
+import { ALL_ACTIVITY_TYPES, type ActivityType } from "../types/ActivityType";
+import { addActivity } from "../services/api";
 
 function ActivityForm({ onActivitiesAdded }: any) {
-  const onSubmit = (formData: FormData) => {
+  const onSubmit = async (formData: FormData) => {
     console.log("Form submitted");
     console.log("Form data:", formData.get("activityType"));
+    const newActivity: CreateActivityRequest = {
+      userId: "12345",
+      type: formData.get("activityType") as ActivityType,
+      duration: parseInt(formData.get("duration") as string, 10),
+      caloriesBurned: parseInt(formData.get("caloriesBurned") as string, 10),
+      startTime: new Date().toISOString(),
+    };
+    console.log("New activity:", newActivity);
     try {
-      //   await addActivity(formData.get("activityType"));
+      await addActivity(newActivity);
       //   setAcitvity({ type: "", duration: "", caloriesBurned: "" });
     } catch (error) {
       console.error("Error adding activity:", error);
     }
   };
-
-  function addActivity(activity: any) {
-    // Simulate an API call to add the activity
-  }
 
   return (
     <Box component="form" action={onSubmit} sx={{ mb: 4 }}>
@@ -34,14 +41,11 @@ function ActivityForm({ onActivitiesAdded }: any) {
           id="activity-type"
           name="activityType"
         >
-          <MenuItem value="RUNNING">Running</MenuItem>
-          <MenuItem value="CYCLING">Cycling</MenuItem>
-          <MenuItem value="SWIMMING">Swimming</MenuItem>
-          <MenuItem value="WALKING">Walking</MenuItem>
-          <MenuItem value="WEIGHT_TRAINING">Weight Training</MenuItem>
-          <MenuItem value="YOGA">Yoga</MenuItem>
-          <MenuItem value="HIIT_TRAINING">HIIT Training</MenuItem>
-          <MenuItem value="MOBILITY_TRAINING">Mobility Training</MenuItem>
+          {ALL_ACTIVITY_TYPES.map((activityType) => (
+            <MenuItem key={activityType} value={activityType}>
+              {activityType.replace(/_/g, " ").toLowerCase()}
+            </MenuItem>
+          ))}
         </Select>
         <TextField
           label="Duration (minutes)"
