@@ -14,10 +14,20 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (user) {
-      config.headers["X-User-ID"] = user.id;
+    // Get token from localStorage
+    const token = localStorage.getItem("token");
+
+    // If token exists, add it to the Authorization header
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
+
+    // If user ID exists in localStorage, add it as a custom header
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user && user.sub) {
+      config.headers["X-User-ID"] = user.sub;
+    }
+
     return config;
   },
   (error) => {
@@ -38,6 +48,7 @@ export const getActivities = async () => {
 
 export const addActivity = async (activity: CreateActivityRequest) => {
   try {
+    activity.userId = JSON.parse(localStorage.getItem("user") || "{}").sub;
     const response = await apiClient.post("/activities", activity);
     return response.data;
   } catch (error) {
