@@ -1,5 +1,8 @@
 import axios from "axios";
 
+import type { Activity } from "../types/Activity";
+import type { ActivityRecommendation } from "../types/ActivityRecommendation";
+import type { ActivityResponse } from "../types/ActivityResponse";
 import type { CreateActivityRequest } from "../types/CreateActivityRequest ";
 
 const API_URL = "http://localhost:8084/api/v1/";
@@ -36,7 +39,7 @@ apiClient.interceptors.request.use(
   }
 );
 
-export const getActivities = async () => {
+export const getActivities = async (): Promise<ActivityResponse> => {
   try {
     const response = await apiClient.get("/activities");
     return response.data;
@@ -57,7 +60,7 @@ export const addActivity = async (activity: CreateActivityRequest) => {
   }
 };
 
-export const deleteActivity = async (activityId) => {
+export const deleteActivity = async (activityId: string) => {
   try {
     const response = await apiClient.delete(`/activities/${activityId}`);
     return response.data;
@@ -67,12 +70,28 @@ export const deleteActivity = async (activityId) => {
   }
 };
 
-export const getActivityDetails = async (activityId) => {
+export const getActivityDetails = async (
+  activityId: string
+): Promise<Activity> => {
   try {
     const response = await apiClient.get(`/activities/${activityId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching activity details:", error);
+    throw error;
+  }
+};
+
+export const getActivityRecommendation = async (
+  activityId: string
+): Promise<ActivityRecommendation> => {
+  try {
+    const response = await apiClient.get(
+      `/recommendations/activity/${activityId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching activity recommendations:", error);
     throw error;
   }
 };

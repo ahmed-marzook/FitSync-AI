@@ -19,7 +19,7 @@ public interface RecommendationRepository extends MongoRepository<Recommendation
         /**
          * Find all recommendations for a specific activity
          */
-        List<Recommendation> findByActivityId(String activityId);
+        Recommendation findByActivityId(String activityId);
 
         /**
          * Find all recommendations for a specific user and activity type

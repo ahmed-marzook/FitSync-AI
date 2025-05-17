@@ -28,14 +28,16 @@ public class SecurityConfiguration {
 
         @Bean
         public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, CorsWebFilter corsFilter) {
-                return http
-                        .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                        .cors(Customizer.withDefaults()) // Enable CORS
-                        .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
-                                .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Always allow OPTIONS requests
-                                .pathMatchers(permittedUrls).permitAll()
-                                .anyExchange().authenticated())
-                        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                        .build();
+                return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+                                .cors(Customizer.withDefaults()) // Enable CORS
+                                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
+                                                .pathMatchers(HttpMethod.OPTIONS, "/**")
+                                                .permitAll() // Always allow OPTIONS requests
+                                                .pathMatchers(permittedUrls)
+                                                .permitAll()
+                                                .anyExchange()
+                                                .authenticated())
+                                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                                .build();
         }
 }

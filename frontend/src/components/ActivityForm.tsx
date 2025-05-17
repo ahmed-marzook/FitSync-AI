@@ -25,7 +25,7 @@ function ActivityForm({ onActivitiesAdded }: any) {
     console.log("New activity:", newActivity);
     try {
       await addActivity(newActivity);
-      //   setAcitvity({ type: "", duration: "", caloriesBurned: "" });
+      onActivitiesAdded();
     } catch (error) {
       console.error("Error adding activity:", error);
     }

@@ -39,9 +39,9 @@ public class RecommendationService {
         /**
          * Get all recommendations for a specific activity
          */
-        public List<RecommendationResponse> getRecommendationsByActivityId(String activityId) {
-                List<Recommendation> recommendations = recommendationRepository.findByActivityId(activityId);
-                return recommendations.stream().map(recommendationMapper::toResponse).collect(Collectors.toList());
+        public RecommendationResponse getRecommendationsByActivityId(String activityId) {
+                Recommendation recommendations = recommendationRepository.findByActivityId(activityId);
+                return recommendationMapper.toResponse(recommendations);
         }
 
         /**

@@ -48,10 +48,9 @@ public class RecommendationController {
          * Get all recommendations for a specific activity
          */
         @GetMapping("/activity/{activityId}")
-        public ResponseEntity<List<RecommendationResponse>> getRecommendationsByActivityId(
+        public ResponseEntity<RecommendationResponse> getRecommendationsByActivityId(
                         @PathVariable @NotBlank(message = "Activity ID cannot be blank") String activityId) {
-                List<RecommendationResponse> responses = recommendationService.getRecommendationsByActivityId(activityId);
-                return ResponseEntity.ok(responses);
+                return ResponseEntity.ok(recommendationService.getRecommendationsByActivityId(activityId));
         }
 
         /**

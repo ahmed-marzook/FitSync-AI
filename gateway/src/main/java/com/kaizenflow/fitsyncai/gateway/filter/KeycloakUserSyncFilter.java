@@ -3,7 +3,6 @@ package com.kaizenflow.fitsyncai.gateway.filter;
 import java.text.ParseException;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -50,20 +49,19 @@ public class KeycloakUserSyncFilter implements WebFilter {
                         }
 
                         return userClientService
-                                .validateUser(request.userGuid().toString())
-                                .flatMap(userDTO -> {
-                                        // User exists, continue with the filter chain
-                                        if (userDTO.email() == null) {
-                                                return userClientService.registerUser(request)
-                                                        .then(chain.filter(exchange));
-                                        }
-                                        return chain.filter(exchange);
-                                })
-                                .onErrorResume(error -> {
-                                        log.error("Error in authentication filter: {}", error.getMessage());
-                                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                                        return exchange.getResponse().setComplete();
-                                });
+                                        .validateUser(request.userGuid().toString())
+                                        .flatMap(userDTO -> {
+                                                // User exists, continue with the filter chain
+                                                if (userDTO.email() == null) {
+                                                        return userClientService.registerUser(request).then(chain.filter(exchange));
+                                                }
+                                                return chain.filter(exchange);
+                                        })
+                                        .onErrorResume(error -> {
+                                                log.error("Error in authentication filter: {}", error.getMessage());
+                                                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                                                return exchange.getResponse().setComplete();
+                                        });
                 } catch (Exception e) {
                         log.error("Failed to process authentication token: {}", e.getMessage());
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -89,11 +87,11 @@ public class KeycloakUserSyncFilter implements WebFilter {
                         }
 
                         return new UserCreateDTO(
-                                jwtClaimsSet.getStringClaim("email"),
-                                "lMsO1,yd+42T",
-                                jwtClaimsSet.getStringClaim("given_name"),
-                                jwtClaimsSet.getStringClaim("family_name"),
-                                UUID.fromString(sub));
+                                        jwtClaimsSet.getStringClaim("email"),
+                                        "lMsO1,yd+42T",
+                                        jwtClaimsSet.getStringClaim("given_name"),
+                                        jwtClaimsSet.getStringClaim("family_name"),
+                                        UUID.fromString(sub));
                 } catch (ParseException e) {
                         log.error("Failed to parse JWT token: {}", e.getMessage());
                         return null;
